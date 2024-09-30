@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from random import uniform
+import matplotlib.animation as animation
 
 # Creation of the matrices
 
-Nt = 100000*10 # Number of timepoints
+Nt = 100000*5 # Number of timepoints
 x = np.zeros(Nt) # Matrix with positions of the motor on the MT 
 t = np.zeros(Nt) # Matrix with timepoints
 s = np.zeros(Nt) # Matrix with kinesin head description (1: kinesin binding an ATP molecule
@@ -49,7 +50,25 @@ for i in range (0, Nt-1):
             x[i+1] = x[i]
 
 
-plt.plot(t,x*1e9)
-plt.xlabel('Time (s)')
-plt.ylabel('Position on MT (nm)')
-plt.show()
+# Interactive Visualization with animation
+fig, ax = plt.subplots()
+line, = ax.plot([], [], lw=2)
+ax.set_xlim(0, t[-1]) 
+ax.set_ylim(np.min(x) * 1e9, np.max(x) * 1e9) 
+ax.set_xlabel('Time (s)')
+ax.set_ylabel('Position on MT (nm)')
+ax.set_title('Kinesin Movement Simulation')
+
+def init():
+    line.set_data([], [])
+    return line,
+
+def update(frame):
+    line.set_data(t[:frame], x[:frame] * 1e9)
+    return line,
+
+num_frames = 500 
+ani = animation.FuncAnimation(fig, update, frames=np.linspace(0, Nt-1, num_frames, dtype=int), 
+                              init_func=init, blit=True, interval=1, repeat=False)
+
+ani.save('kinesin_movement.gif', writer='pillow', fps=20) 
