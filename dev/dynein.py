@@ -38,8 +38,6 @@ Koff2 = 250e-1
 Koff3 = Koff2
 Koff4 = Koff3
 
-F = F0 
-
 # probability of unbinding ATP
 Poff1 = Koff1*delta_t
 Poff2 = Koff2*delta_t
@@ -56,8 +54,8 @@ def bind_unbind(s, ADP_released: False, F):
     Pon3 = Kon3*np.exp((F*d0)/(kB*T))*ATP*delta_t 
     Pon4 = Kon4*np.exp((F*d0)/(kB*T))*ATP*delta_t 
 
-    if not s in [0, 1, 2, 3]:
-        raise Exception("s has to be between 0 and 3")
+    # if not s in [0, 1, 2, 3]:
+    #     raise Exception("s has to be between 0 and 3")
 
     p = uniform(0,1)
 
@@ -120,7 +118,6 @@ def bind_unbind(s, ADP_released: False, F):
             else:
                 return 3 
 
-
 # Values Pon & Poff
 # 8e-08 0.002027246208393239 0.0005068115520983098 0.0003378743680655399
 # 2e-05 0.005 0.005 0.005
@@ -130,8 +127,9 @@ def size_step(s):
     s_to_size = {0: 32e-9, 1: 32e-9, 2: 24e-9, 3: 16e-9, 4: 8e-9}
     return s_to_size[s]
 
-def hydrolysis_step(s):
+def hydrolysis_step(s, x):
     # Hydrolysis?
+    ADP_released = False 
     p = uniform(0,1)
     a = 1 if s > 1 else 1/100
     step = size_step(s)
@@ -142,11 +140,25 @@ def hydrolysis_step(s):
         p = uniform(0,1)
         Psyn = Psyn0*np.exp((beta*F*step)/(kB*T))
         if p <= Psyn:
-            return s, x
+            return s, x, ADP_released
         else:
-            return s-1, x+step
+            ADP_released = True
+            return s-1, x+step, ADP_released
     else:
-        return s, x
+        return s, x, ADP_released
 
 
+for i in range (0, Nt-1):
+    ADP_released = False
+    F = Ktrap*x[i] # load
+    t[i+1] = t[i] + delta_t
+
+    s[i] = bind_unbind(s[i], ADP_released, F)
+    s[i+1], x[i+1], ADP_released = hydrolysis_step(s[i], x[i])
+
+
+plt.plot(t,x*1e9)
+plt.xlabel('Time (s)')
+plt.ylabel('Position on MT (nm)')
+plt.show()
 
