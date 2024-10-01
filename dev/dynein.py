@@ -22,7 +22,8 @@ Kcat0 = 55 # load-dependent rate constant
 kB = 1.38064852e-23 # boltzmann constant
 T = 300 # temperature (Kelvin)
 alpha = 0.3 
-ATP = 5e-3 # ATP concentration
+ATP = 1e-9 # ATP concentration
+d0 = 6e-9
 
 # rate constants for binding
 Kon1 = 4e5
@@ -35,12 +36,9 @@ Koff2 = 250e-1
 Koff3 = Koff2
 Koff4 = Koff3
 
-# probability of binding ATP
-Pon1 = Kon1*ATP*delta_t 
-Pon2 = Kon2*ATP*delta_t 
-Pon3 = Kon3*ATP*delta_t 
-Pon4 = Kon4*ATP*delta_t 
+F = F0 
 
+# probability of unbinding ATP
 Poff1 = Koff1*delta_t
 Poff2 = Koff2*delta_t
 Poff3 = Koff3*delta_t
@@ -51,8 +49,14 @@ print(Poff1, Poff2, Poff3, Poff4)
 
 # Dynein
 
-def bind_unbind(s, ADP_released: False):
+def bind_unbind(s, ADP_released: False, F):
     
+    # probability of binding ATP
+    Pon1 = Kon1*ATP*delta_t 
+    Pon2 = Kon2*np.exp((F*d0)/(kB*T))*ATP*delta_t 
+    Pon3 = Kon3*np.exp((F*d0)/(kB*T))*ATP*delta_t 
+    Pon4 = Kon4*np.exp((F*d0)/(kB*T))*ATP*delta_t 
+
     if not s in [0, 1, 2, 3]:
         raise Exception("s has to be between 0 and 3")
 
@@ -118,7 +122,9 @@ def bind_unbind(s, ADP_released: False):
                 return 3 
 
 
-for i in range(10):
-    p = randint(0, 3)
-    print(p, bind_unbind(p, True))
+# Values Pon & Poff
+# 8e-08 0.002027246208393239 0.0005068115520983098 0.0003378743680655399
+# 2e-05 0.005 0.005 0.005
+# really low
+
 
