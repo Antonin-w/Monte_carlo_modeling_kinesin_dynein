@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from random import uniform
+from random import randint
 import matplotlib.animation as animation
 
 # Creation of the matrices
@@ -13,7 +14,7 @@ s = np.zeros(Nt) # Matrix with kinesin head description (1: kinesin binding an A
 
 # Variables 
 
-delta_t = 1e-5 # length of a time step
+delta_t = 2e-4 # length of a time step
 step = 8e-9 # taking 8-nm steps
 Ktrap = 7e-6 # optical trap stiffness
 F0 = 0.7e-11 # stalling force
@@ -34,28 +35,90 @@ Koff2 = 250e-1
 Koff3 = Koff2
 Koff4 = Koff3
 
-Pon = Kon*ATP*delta_t # probability of binding ATP
+# probability of binding ATP
+Pon1 = Kon1*ATP*delta_t 
+Pon2 = Kon2*ATP*delta_t 
+Pon3 = Kon3*ATP*delta_t 
+Pon4 = Kon4*ATP*delta_t 
 
-# Dynein movement
+Poff1 = Koff1*delta_t
+Poff2 = Koff2*delta_t
+Poff3 = Koff3*delta_t
+Poff4 = Koff4*delta_t
 
-for i in range (0, Nt-1):
-    F = Ktrap*x[i] # load
-    Pcat = (Kcat0*np.exp((-alpha*F*step)/(kB*T))) * delta_t # probability of catalysis of ATP
+print(Pon1, Pon2, Pon3, Pon4)
+print(Poff1, Poff2, Poff3, Poff4)
 
-    t[i+1] = t[i] + delta_t
+# Dynein
 
-    # Binding/Unbinding ATP 
-    p = uniform(0, 1)
+def bind_unbind(s, ADP_released: False):
+    
+    if not s in [0, 1, 2, 3]:
+        raise Exception("s has to be between 0 and 3")
 
-    if s[i] == 0:
-        s[i+1] = 1 if p <= Pon else 0 # Binding ATP with Pon probability
-        x[i+1] = x[i] # MT doesn't move
+    p = uniform(0,1)
+
+    if not ADP_released:
+
+        if s == 0:
+            return 1 if p <= Pon1 else 0
+
+        elif s == 1:
+            if p <= Poff1:
+                return 0
+            elif p > Poff1 and p <= (Poff1 + Pon2):
+                return 2
+            else:
+                return 1 
+
+        elif s == 2:
+            if p <= Poff2:
+                return 1
+            elif p > Poff2 and p <= (Poff2 + Pon3):
+                return 3
+            else:
+                return 2
+
+        else:
+            if p <= Poff3:
+                return 2
+            elif p > Poff3 and p <= (Poff3 + Pon4):
+                return 4
+            else:
+                return 3 
+    
+    # If site 1 is empty
     else:
-        if p <= Pcat: # Hydrolisis takes place with probability Pcat
-            epsilon = 1-(F/F0)**2
-            p = uniform(0, 1)
-            x[i+1] = x[i] + step if p <= epsilon else x[i] # Kinesis takes a step on the MT with probability epsilon
-            s[i+1] = 0
-        else: # Otherwise, stays at the same place
-            s[i+1] = s[i]
-            x[i+1] = x[i]
+
+        if s == 0:
+            return 1 if p <= Pon1 else 0
+
+        elif s == 1:
+            if p <= Poff2:
+                return 0
+            elif p > Poff2 and p <= (Poff2 + Pon1):
+                return 2
+            else:
+                return 1 
+
+        elif s == 2:
+            if p <= Poff3:
+                return 1
+            elif p > Poff3 and p <= (Poff3 + Pon1):
+                return 3
+            else:
+                return 2
+
+        else:
+            if p <= Poff4:
+                return 2
+            elif p > Poff4 and p <= (Poff4 + Pon1):
+                return 4
+            else:
+                return 3 
+
+
+for i in range(10):
+    p = randint(0, 3)
+    print(p, bind_unbind(p, True))
+
