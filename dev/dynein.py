@@ -22,8 +22,10 @@ Kcat0 = 55 # load-dependent rate constant
 kB = 1.38064852e-23 # boltzmann constant
 T = 300 # temperature (Kelvin)
 alpha = 0.3 
+beta = 0.7
 ATP = 1e-9 # ATP concentration
 d0 = 6e-9
+Psyn0 = 0.23
 
 # rate constants for binding
 Kon1 = 4e5
@@ -43,9 +45,6 @@ Poff1 = Koff1*delta_t
 Poff2 = Koff2*delta_t
 Poff3 = Koff3*delta_t
 Poff4 = Koff4*delta_t
-
-print(Pon1, Pon2, Pon3, Pon4)
-print(Poff1, Poff2, Poff3, Poff4)
 
 # Dynein
 
@@ -126,5 +125,28 @@ def bind_unbind(s, ADP_released: False, F):
 # 8e-08 0.002027246208393239 0.0005068115520983098 0.0003378743680655399
 # 2e-05 0.005 0.005 0.005
 # really low
+
+def size_step(s):
+    s_to_size = {0: 32e-9, 1: 32e-9, 2: 24e-9, 3: 16e-9, 4: 8e-9}
+    return s_to_size[s]
+
+def hydrolysis_step(s):
+    # Hydrolysis?
+    p = uniform(0,1)
+    a = 1 if s > 1 else 1/100
+    step = size_step(s)
+    Pcat = a*(Kcat0*np.exp((-alpha*F*step)/(kB*T))) * delta_t
+
+    if p <= Pcat:
+        # Reverse hydrolysis?
+        p = uniform(0,1)
+        Psyn = Psyn0*np.exp((beta*F*step)/(kB*T))
+        if p <= Psyn:
+            return s, x
+        else:
+            return s-1, x+step
+    else:
+        return s, x
+
 
 
