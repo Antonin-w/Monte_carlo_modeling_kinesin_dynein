@@ -11,15 +11,13 @@ In this project, we will modelise kinesin and dynesin movements on a microtubule
 ![](res/dynein.gif)
 
 
-<details>
-  <summary>
-    Click to see main code.
-  </summary>
-
 ```python
-# bind_unbind(s, ADP_released, F): function returning the new value of s depending if Binding/Unbinding occured. 
-# hydrolysis_step(s, x): function returning new values of s, x and if ADP has been released or not, depending on Hydrolysis and if molecular motor took a step or no. 
 # Check dev/dynein.py to better understand functions created
+
+# bind_unbind(s, ADP_released, F): function returning the new value of s depending if Binding/Unbinding occured. 
+
+# hydrolysis_step(s, x): function returning new values of s, x and if ADP has been released or not, depending on Hydrolysis and if molecular motor took a step or no. 
+
 
 for i in range (0, Nt-1):
     ADP_released = False
@@ -33,18 +31,12 @@ for i in range (0, Nt-1):
     else:
         s[i+1], x[i+1], ADP_released = s[i], x[i], False
 ```
-</details>
 
  <br /> 
 
 # Kinesin 
 
 ![](res/kinesin.gif)
-
-<details>
-  <summary>
-    Click to see main code.
-  </summary>
 
 ```python
 for i in range (0, Nt-1):
@@ -70,5 +62,43 @@ for i in range (0, Nt-1):
             x[i+1] = x[i]
 
 ```
+
+<br>
+
+# Variables
+
+```python
+# Variables 
+
+delta_t = 2e-4 # length of a time step
+step = 8e-9 # taking 8-nm steps
+Ktrap = 7e-6 # optical trap stiffness
+F0 = 0.7e-11 # stalling force
+Kcat0 = 55 # load-dependent rate constant
+kB = 1.38064852e-23 # boltzmann constant
+T = 300 # temperature (Kelvin)
+alpha = 0.3 
+beta = 0.7
+ATP = 1e-3 # ATP concentration
+d0 = 6e-9
+Psyn0 = 0.23
+
+# rate constants for binding
+Kon1 = 4e5
+Kon2 = 4e5
+Kon3 = Kon2 / 4
+Kon4 = Kon2 / 6
+
+Koff1 = 10
+Koff2 = 250
+Koff3 = Koff2
+Koff4 = Koff3
+
+# probability of unbinding ATP
+Poff1 = Koff1*delta_t
+Poff2 = Koff2*delta_t
+Poff3 = Koff3*delta_t
+Poff4 = Koff4*delta_t
+````
 
 
