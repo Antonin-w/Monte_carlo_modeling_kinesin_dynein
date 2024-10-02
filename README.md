@@ -1,6 +1,6 @@
 # Monte Carlo modeling of kinesis and dynein with Python
 
-In this project, we will modelise kinesin and dynesin movements on a microtubule using the Monte Carlo algorithm. The algorithm and values used have been taken in the following paper:
+In this project, I've modeled kinesin and dynein movements on a microtubule using the Monte Carlo algorithm. The algorithm and values used have been taken from the following paper:
 
 > Singh MP, Mallik R, Gross SP, Yu CC. [Monte Carlo modeling of single-molecule cytoplasmic dynein.](https://pubmed.ncbi.nlm.nih.gov/16103365/) Proc Natl Acad Sci U S A. 2005;102(34):12059-12064. doi:10.1073/pnas.0501570102
 
