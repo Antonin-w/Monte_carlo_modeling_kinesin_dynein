@@ -6,6 +6,10 @@ In this project, we will modelise kinesin and dynesin movements on a microtubule
 
 <br>
 
+# Dynein 
+
+![](res/dynein.gif)
+
 # Kinesin 
 
 ![](res/kinesin.gif)
