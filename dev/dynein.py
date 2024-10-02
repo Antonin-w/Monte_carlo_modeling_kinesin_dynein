@@ -6,11 +6,13 @@ import matplotlib.animation as animation
 
 # Creation of the matrices
 
-Nt = 10000*1 # Number of timepoints
+Nt = 10000*2 # Number of timepoints
 x = np.zeros(Nt) # Matrix with positions of the motor on the MT 
 t = np.zeros(Nt) # Matrix with timepoints
 s = np.zeros(Nt) # Matrix with kinesin head description (1: kinesin binding an ATP molecule
                                                     #    0: kinesin without ATP bound)
+
+steps_counts = {8e-9: 0, 16e-9:0, 24e-9:0, 32e-9:0}
 
 # Variables 
 
@@ -33,8 +35,8 @@ Kon2 = 4e5
 Kon3 = Kon2 / 4
 Kon4 = Kon2 / 6
 
-Koff1 = 1e-1
-Koff2 = 250e-1
+Koff1 = 10
+Koff2 = 250
 Koff3 = Koff2
 Koff4 = Koff3
 
@@ -115,13 +117,15 @@ def bind_unbind(s, ADP_released: False, F):
             else:
                 return 2
 
-        else:
+        elif s == 3:
             if p <= Poff4:
                 return 2
             elif p > Poff4 and p <= (Poff4 + Pon1):
                 return 4
             else:
                 return 3 
+        else:
+            raise ValueError()
 
 # Values Pon & Poff
 # 8e-08 0.002027246208393239 0.0005068115520983098 0.0003378743680655399
@@ -148,6 +152,7 @@ def hydrolysis_step(s, x):
             return s, x, ADP_released
         else:
             ADP_released = True
+            steps_counts[step] = steps_counts[step] + 1
             return s-1, x+step, ADP_released
     else:
         return s, x, ADP_released
@@ -157,7 +162,6 @@ for i in range (0, Nt-1):
     ADP_released = False
     F = Ktrap*x[i] # load
     t[i+1] = t[i] + delta_t
-
     s[i] = bind_unbind(s[i], ADP_released, F)
 
     if s[i] >= 1:
@@ -165,6 +169,10 @@ for i in range (0, Nt-1):
 
     else:
         s[i+1], x[i+1], ADP_released = s[i], x[i], False
+
+print(steps_counts)
+unique, counts = np.unique(s, return_counts=True)
+print(dict(zip(unique, counts)))
 
 plt.plot(t,x*1e9)
 plt.xlabel('Time (s)')
