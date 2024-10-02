@@ -6,7 +6,7 @@ import matplotlib.animation as animation
 
 # Creation of the matrices
 
-Nt = 10000*2 # Number of timepoints
+Nt = 20000 # Number of timepoints
 x = np.zeros(Nt) # Matrix with positions of the motor on the MT 
 t = np.zeros(Nt) # Matrix with timepoints
 s = np.zeros(Nt) # Matrix with kinesin head description (1: kinesin binding an ATP molecule
@@ -174,8 +174,26 @@ print(steps_counts)
 unique, counts = np.unique(s, return_counts=True)
 print(dict(zip(unique, counts)))
 
-plt.plot(t,x*1e9)
-plt.xlabel('Time (s)')
-plt.ylabel('Position on MT (nm)')
-plt.show()
+# Interactive Visualization with animation
+fig, ax = plt.subplots()
+line, = ax.plot([], [], lw=2)
+ax.set_xlim(0, t[-1]) 
+ax.set_ylim(np.min(x) * 1e9, np.max(x) * 1e9) 
+ax.set_xlabel('Time (s)')
+ax.set_ylabel('Position on MT (nm)')
+ax.set_title('Dynein Movement Simulation')
+
+def init():
+    line.set_data([], [])
+    return line,
+
+def update(frame):
+    line.set_data(t[:frame], x[:frame] * 1e9)
+    return line,
+
+num_frames = 500 
+ani = animation.FuncAnimation(fig, update, frames=np.linspace(0, Nt-1, num_frames, dtype=int), 
+                              init_func=init, blit=True, interval=1, repeat=False)
+
+ani.save('./res/dynein.gif', writer='pillow', fps=20) 
 
