@@ -10,38 +10,43 @@ In this project, we will modelise kinesin and dynesin movements on a microtubule
 
 ![](res/dynein.gif)
 
+
+<details>
+  <summary>
+    Click to see main code.
+  </summary>
+
+```python
+# bind_unbind(s, ADP_released, F): function returning the new value of s depending if Binding/Unbinding occured. 
+# hydrolysis_step(s, x): function returning new values of s, x and if ADP has been released or not, depending on Hydrolysis and if molecular motor took a step or no. 
+# Check dev/dynein.py to better understand functions created
+
+for i in range (0, Nt-1):
+    ADP_released = False
+    F = Ktrap*x[i] # load
+    t[i+1] = t[i] + delta_t
+    s[i] = bind_unbind(s[i], ADP_released, F)
+
+    if s[i] >= 1:
+        s[i+1], x[i+1], ADP_released = hydrolysis_step(s[i], x[i])
+
+    else:
+        s[i+1], x[i+1], ADP_released = s[i], x[i], False
+```
+</details>
+
+ <br /> 
+
 # Kinesin 
 
 ![](res/kinesin.gif)
 
+<details>
+  <summary>
+    Click to see main code.
+  </summary>
+
 ```python
-import numpy as np
-from random import uniform
-
-# Creation of the matrices
-
-Nt = 100000*5 # Number of timepoints
-x = np.zeros(Nt) # Matrix with positions of the motor on the MT 
-t = np.zeros(Nt) # Matrix with timepoints
-s = np.zeros(Nt) # Matrix with kinesin head description (1: kinesin binding an ATP molecule
-                                                    #    0: kinesin without ATP bound)
-
-# Variables 
-
-delta_t = 1e-5 # length of a time step
-step = 8e-9 # taking 8-nm steps
-Ktrap = 7e-6 # optical trap stiffness
-F0 = 0.7e-11 # stalling force
-Kcat0 = 55 # load-dependent rate constant
-kB = 1.38064852e-23 # boltzmann constant
-T = 300 # temperature (Kelvin)
-alpha = 0.3 
-Kon = 2e6 # rate constants for binding
-ATP = 5e-3 # ATP concentration
-Pon = Kon*ATP*delta_t # probability of binding ATP
-
-# Kinesin movement
-
 for i in range (0, Nt-1):
     F = Ktrap*x[i] # load
     Pcat = (Kcat0*np.exp((-alpha*F*step)/(kB*T))) * delta_t # probability of catalysis of ATP
