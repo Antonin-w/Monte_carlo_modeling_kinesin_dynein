@@ -191,9 +191,9 @@ def update(frame):
     line.set_data(t[:frame], x[:frame] * 1e9)
     return line,
 
-num_frames = 500 
+num_frames = 100 
 ani = animation.FuncAnimation(fig, update, frames=np.linspace(0, Nt-1, num_frames, dtype=int), 
-                              init_func=init, blit=True, interval=1, repeat=False)
+                              init_func=init, blit=True, interval=0.2, repeat=False)
 
 ani.save('./res/dynein.gif', writer='pillow', fps=20) 
 
