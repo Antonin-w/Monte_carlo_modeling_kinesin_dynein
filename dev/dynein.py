@@ -6,7 +6,7 @@ import matplotlib.animation as animation
 
 # Creation of the matrices
 
-Nt = 100000*5 # Number of timepoints
+Nt = 10000*1 # Number of timepoints
 x = np.zeros(Nt) # Matrix with positions of the motor on the MT 
 t = np.zeros(Nt) # Matrix with timepoints
 s = np.zeros(Nt) # Matrix with kinesin head description (1: kinesin binding an ATP molecule
@@ -23,7 +23,7 @@ kB = 1.38064852e-23 # boltzmann constant
 T = 300 # temperature (Kelvin)
 alpha = 0.3 
 beta = 0.7
-ATP = 1e-9 # ATP concentration
+ATP = 1e-3 # ATP concentration
 d0 = 6e-9
 Psyn0 = 0.23
 
@@ -54,8 +54,8 @@ def bind_unbind(s, ADP_released: False, F):
     Pon3 = Kon3*np.exp((F*d0)/(kB*T))*ATP*delta_t 
     Pon4 = Kon4*np.exp((F*d0)/(kB*T))*ATP*delta_t 
 
-    # if not s in [0, 1, 2, 3]:
-    #     raise Exception("s has to be between 0 and 3")
+    if not s in [0, 1, 2, 3, 4]:
+        raise Exception("s has to be between 0 and 4")
 
     p = uniform(0,1)
 
@@ -80,13 +80,18 @@ def bind_unbind(s, ADP_released: False, F):
             else:
                 return 2
 
-        else:
+        elif s == 3:
             if p <= Poff3:
                 return 2
             elif p > Poff3 and p <= (Poff3 + Pon4):
                 return 4
             else:
                 return 3 
+        else:
+            if p <= Poff4:
+                return 3
+            else:
+                return 4
     
     # If site 1 is empty
     else:
@@ -154,8 +159,12 @@ for i in range (0, Nt-1):
     t[i+1] = t[i] + delta_t
 
     s[i] = bind_unbind(s[i], ADP_released, F)
-    s[i+1], x[i+1], ADP_released = hydrolysis_step(s[i], x[i])
 
+    if s[i] >= 1:
+        s[i+1], x[i+1], ADP_released = hydrolysis_step(s[i], x[i])
+
+    else:
+        s[i+1], x[i+1], ADP_released = s[i], x[i], False
 
 plt.plot(t,x*1e9)
 plt.xlabel('Time (s)')
