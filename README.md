@@ -8,7 +8,7 @@ In this project, we will modelise kinesin and dynesin movements on a microtubule
 
 # Kinesin 
 
-![](res/kinesin_movement.gif)
+![](res/kinesin.gif)
 
 ```python
 import numpy as np

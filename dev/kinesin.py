@@ -5,7 +5,7 @@ import matplotlib.animation as animation
 
 # Creation of the matrices
 
-Nt = 100000*5 # Number of timepoints
+Nt = 20000 # Number of timepoints
 x = np.zeros(Nt) # Matrix with positions of the motor on the MT 
 t = np.zeros(Nt) # Matrix with timepoints
 s = np.zeros(Nt) # Matrix with kinesin head description (1: kinesin binding an ATP molecule
@@ -13,7 +13,7 @@ s = np.zeros(Nt) # Matrix with kinesin head description (1: kinesin binding an A
 
 # Variables 
 
-delta_t = 1e-5 # length of a time step
+delta_t = 2e-4 # length of a time step
 step = 8e-9 # taking 8-nm steps
 Ktrap = 7e-6 # optical trap stiffness
 F0 = 0.7e-11 # stalling force
@@ -22,7 +22,7 @@ kB = 1.38064852e-23 # boltzmann constant
 T = 300 # temperature (Kelvin)
 alpha = 0.3 
 Kon = 2e6 # rate constants for binding
-ATP = 5e-3 # ATP concentration
+ATP = 1e-3 # ATP concentration
 Pon = Kon*ATP*delta_t # probability of binding ATP
 
 # Kinesin movement
@@ -71,4 +71,4 @@ num_frames = 500
 ani = animation.FuncAnimation(fig, update, frames=np.linspace(0, Nt-1, num_frames, dtype=int), 
                               init_func=init, blit=True, interval=1, repeat=False)
 
-ani.save('./res/kinesin_movement.gif', writer='pillow', fps=20) 
+ani.save('./res/kinesin.gif', writer='pillow', fps=20) 
