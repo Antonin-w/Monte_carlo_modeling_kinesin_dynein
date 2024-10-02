@@ -178,10 +178,17 @@ print(dict(zip(unique, counts)))
 fig, ax = plt.subplots()
 line, = ax.plot([], [], lw=2)
 ax.set_xlim(0, t[-1]) 
-ax.set_ylim(np.min(x) * 1e9, np.max(x) * 1e9) 
+ax.set_ylim(np.min(x) * 1e9, (np.max(x) * 1e9)+8) 
 ax.set_xlabel('Time (s)')
 ax.set_ylabel('Position on MT (nm)')
 ax.set_title('Dynein Movement Simulation')
+
+y_min = np.floor(np.min(x) * 1e9 / 8) * 8 
+y_max = np.ceil(((np.max(x) * 1e9)+8) / 8) * 8  
+for y in np.arange(y_min, y_max, 8):   
+    ax.axhline(y=y, color='gray', linestyle='--', lw=0.5)
+
+ax.text(3.5, 83, '8 nm', color='black', ha='left', va='center', fontsize=10)
 
 def init():
     line.set_data([], [])
