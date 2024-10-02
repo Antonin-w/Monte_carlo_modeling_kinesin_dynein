@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from random import uniform
-from random import randint
 import matplotlib.animation as animation
 
 # Creation of the matrices
@@ -127,11 +126,6 @@ def bind_unbind(s, ADP_released: False, F):
         else:
             raise ValueError()
 
-# Values Pon & Poff
-# 8e-08 0.002027246208393239 0.0005068115520983098 0.0003378743680655399
-# 2e-05 0.005 0.005 0.005
-# really low
-
 def size_step(s):
     s_to_size = {0: 32e-9, 1: 32e-9, 2: 24e-9, 3: 16e-9, 4: 8e-9}
     return s_to_size[s]
@@ -169,10 +163,6 @@ for i in range (0, Nt-1):
 
     else:
         s[i+1], x[i+1], ADP_released = s[i], x[i], False
-
-print(steps_counts)
-unique, counts = np.unique(s, return_counts=True)
-print(dict(zip(unique, counts)))
 
 # Interactive Visualization with animation
 fig, ax = plt.subplots()
